@@ -1,89 +1,230 @@
-jQuery(document).ready(function () {
+/* JS Document */
+
+/******************************
+
+[Table of Contents]
+
+1. Vars and Inits
+2. Set Header
+3. Init Menu
+4. InitDeptSlider
+5. Init Accordions
 
 
-    $('#carouselHacked').carousel();
+******************************/
 
-    //this code is for the gmap
-    var map = new GMaps({
-        el: '#map',
-        lat: -12.043333,
-        lng: -77.028333
-    });
+$(document).ready(function()
+{
+	"use strict";
 
+	/* 
 
-    //this code is for smooth scroll and nav selector
-    $(document).ready(function () {
-        $(document).on("scroll", onScroll);
+	1. Vars and Inits
 
-        //smoothscroll
-        $('a[href^="#"]').on('click', function (e) {
-            e.preventDefault();
-            $(document).off("scroll");
+	*/
 
-            $('a').each(function () {
-                $(this).removeClass('active');
-            })
-            $(this).addClass('active');
+	var header = $('.header');
+	var menu = $('.menu');
+	var menuActive = false;
 
-            var target = this.hash,
-                menu = target;
-            $target = $(target);
-            $('html, body').stop().animate({
-                'scrollTop': $target.offset().top + 2
-            }, 500, 'swing', function () {
-                window.location.hash = target;
-                $(document).on("scroll", onScroll);
-            });
-        });
-    });
+	setHeader();
 
-    function onScroll(event) {
-        var scrollPos = $(document).scrollTop();
-        $('.navbar-default .navbar-nav>li>a').each(function () {
-            var currLink = $(this);
-            var refElement = $(currLink.attr("href"));
-            if (refElement.position().top <= scrollPos && refElement.position().top + refElement.height() > scrollPos) {
-                $('.navbar-default .navbar-nav>li>a').removeClass("active");
-                currLink.addClass("active");
-            } else {
-                currLink.removeClass("active");
-            }
-        });
-    }
+	$(window).on('resize', function()
+	{
+		setHeader();
 
+		setTimeout(function()
+		{
+			$(window).trigger('resize.px.parallax');
+		}, 375);
+	});
 
-    //this code is for animation nav
-    jQuery(window).scroll(function () {
-        var windowScrollPosTop = jQuery(window).scrollTop();
+	$(document).on('scroll', function()
+	{
+		setHeader();
+	});
 
-        if (windowScrollPosTop >= 150) {
-            jQuery(".header").css({
-                "background": "#B193DD",
-            });
-            jQuery(".top-header img.logo").css({
-                "margin-top": "-40px",
-                "margin-bottom": "0"
-            });
-            jQuery(".navbar-default").css({
-                "margin-top": "-15px",
-            });
-        } else {
-            jQuery(".header").css({
-                "background": "transparent",
-            });
-            jQuery(".top-header img.logo").css({
-                "margin-top": "-15px",
-                "margin-bottom": "25px"
-            });
-            jQuery(".navbar-default").css({
-                "margin-top": "12px",
-                "margin-bottom": "0"
-            });
+	initMenu();
+	initDeptSlider();
+	initAccordions();
 
-        }
-    });
+	/* 
 
+	2. Set Header
 
+	*/
 
+	function setHeader()
+	{
+		if($(window).scrollTop() > 91)
+		{
+			header.addClass('scrolled');
+		}
+		else
+		{
+			header.removeClass('scrolled');
+		}
+	}
+
+	/* 
+
+	3. Init Menu
+
+	*/
+
+	function initMenu()
+	{
+		if($('.hamburger').length && $('.menu').length)
+		{
+			var hamb = $('.hamburger');
+			var close = $('.menu_close_container');
+
+			hamb.on('click', function()
+			{
+				if(!menuActive)
+				{
+					openMenu();
+				}
+				else
+				{
+					closeMenu();
+				}
+			});
+
+			close.on('click', function()
+			{
+				if(!menuActive)
+				{
+					openMenu();
+				}
+				else
+				{
+					closeMenu();
+				}
+			});
+
+	
+		}
+	}
+
+	function openMenu()
+	{
+		menu.addClass('active');
+		menuActive = true;
+	}
+
+	function closeMenu()
+	{
+		menu.removeClass('active');
+		menuActive = false;
+	}
+
+	/* 
+
+	4. Init Dept Slider
+
+	*/
+
+	function initDeptSlider()
+	{
+		if($('.dept_slider').length)
+		{
+			var deptSlider = $('.dept_slider');
+			deptSlider.owlCarousel(
+			{
+				items:4,
+				autoplay:true,
+				loop:true,
+				nav:false,
+				dots:false,
+				margin:30,
+				smartSpeed:1200,
+				responsive:
+				{
+					0:{items:1},
+					768:{items:2},
+					992:{items:3},
+					1200:{items:4}
+				}
+			});
+
+			if($('.dept_slider_nav').length)
+			{
+				var next = $('.dept_slider_nav');
+				next.on('click', function()
+				{
+					deptSlider.trigger('next.owl.carousel');
+				});
+			}
+		}
+	}
+
+	/* 
+
+	5. Init Accordions
+
+	*/
+
+	function initAccordions()
+	{
+		if($('.accordion').length)
+		{
+			var accs = $('.accordion');
+
+			accs.each(function()
+			{
+				var acc = $(this);
+
+				if(acc.hasClass('active'))
+				{
+					var panel = $(acc.next());
+					var panelH = panel.prop('scrollHeight') + "px";
+					
+					if(panel.css('max-height') == "0px")
+					{
+						panel.css('max-height', panel.prop('scrollHeight') + "px");
+					}
+					else
+					{
+						panel.css('max-height', "0px");
+					} 
+				}
+
+				acc.on('click', function()
+				{
+					if(acc.hasClass('active'))
+					{
+						acc.removeClass('active');
+						var panel = $(acc.next());
+						var panelH = panel.prop('scrollHeight') + "px";
+						
+						if(panel.css('max-height') == "0px")
+						{
+							panel.css('max-height', panel.prop('scrollHeight') + "px");
+						}
+						else
+						{
+							panel.css('max-height', "0px");
+						} 
+					}
+					else
+					{
+						acc.addClass('active');
+						var panel = $(acc.next());
+						var panelH = panel.prop('scrollHeight') + "px";
+						
+						if(panel.css('max-height') == "0px")
+						{
+							panel.css('max-height', panel.prop('scrollHeight') + "px");
+						}
+						else
+						{
+							panel.css('max-height', "0px");
+						} 
+					}
+				});
+			});
+		}
+	}
 
 });
